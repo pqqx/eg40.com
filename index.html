@@ -5,22 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EG40 — JR東日本メカトロニクス 自動改札機</title>
 <meta name="description" content="2022年12月11日、代々木駅から始まったQR対応自動改札機「EG40」の記録。意匠・仕様・展開・そして界隈用語まで。">
+
+<!-- JSが動いた時だけ隠す。動かなければ全部見える -->
+<script>document.documentElement.className += ' js';</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=M+PLUS+1+Code:wght@300..700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 /* ============ tokens ============ */
 :root{
-  --concrete:#E7E5DF;      /* ホーム床のコンクリート */
-  --concrete-dk:#D5D2CA;
-  --ink:#14161A;           /* 標識の黒 */
+  --concrete:#E7E5DF;
+  --ink:#14161A;
   --ink-soft:#5A5F68;
-  --body-grey:#C6C4BE;     /* 改札機の筐体 */
-  --qr-red:#CE2B21;        /* QR読取口の赤 */
-  --suica:#00A3D4;         /* ICリーダーの青 */
-  --amber:#F0A32B;         /* ドットマトリクス表示 */
-  --tactile:#F2C200;       /* 点字ブロックの黄 */
-  --panel:#0E1114;         /* 表示器の黒 */
+  --qr-red:#CE2B21;
+  --suica:#00A3D4;
+  --amber:#F0A32B;
+  --tactile:#F2C200;
+  --panel:#0E1114;
+  --go:#3FA24B;
   --line:rgba(20,22,26,.16);
 
   --f-disp:"Archivo","Zen Kaku Gothic New",sans-serif;
@@ -33,35 +36,32 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0;
+  margin:0;min-height:100%;
   background:var(--concrete);
   color:var(--ink);
   font-family:var(--f-jp);
-  font-weight:400;
   line-height:1.75;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  overflow-x:clip;
 }
-body::before{ /* ホームの微細なコンクリート斑 */
+body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
   background-image:radial-gradient(circle at 1px 1px,rgba(20,22,26,.07) 1px,transparent 0);
   background-size:5px 5px;
 }
 main{position:relative;z-index:1}
-
 a{color:inherit}
 h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 
-/* ============ 虹：上部のLEDストリップ ============ */
+/* ============ 虹：上部LEDストリップ ============ */
 .rainbow{
   position:fixed;top:0;left:0;right:0;height:5px;z-index:60;
   background:linear-gradient(90deg,#CE2B21,#F0A32B,#8CC63F,#00A3D4,#6B5BD2,#CE2B21);
-  background-size:300% 100%;
-  animation:rbSlide 14s linear infinite;
+  background-size:300% 100%;animation:rbSlide 14s linear infinite;
 }
 @keyframes rbSlide{to{background-position:300% 0}}
 
-/* ============ 共通レイアウト ============ */
+/* ============ 共通 ============ */
 .wrap{padding-inline:var(--gut);max-width:1500px;margin-inline:auto}
 .eyebrow{
   font-family:var(--f-mono);font-size:.72rem;font-weight:500;
@@ -70,22 +70,21 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 }
 .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
 
-/* 点字ブロック：セクションの区切り＝床の誘導 */
-.tactile{
-  height:34px;width:100%;background:var(--tactile);
-  background-image:radial-gradient(circle at 50% 50%,rgba(20,22,26,.30) 3.2px,transparent 3.4px);
-  background-size:22px 22px;background-position:center;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.12);
-}
+section{padding-block:clamp(60px,8vw,110px)}
+.sec-head{margin-bottom:clamp(34px,5vw,58px);max-width:60ch}
+.sec-head h2{font-size:clamp(1.7rem,4.2vw,3.1rem);margin-bottom:14px}
+.sec-head p{margin:0;color:#3A3F47;font-size:.98rem}
 
-/* 出現アニメーション：フラップが開くように */
-.rv{opacity:0;transform:translateY(26px);clip-path:inset(0 0 100% 0);
-    transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1),clip-path .9s cubic-bezier(.2,.7,.2,1)}
-.rv.in{opacity:1;transform:none;clip-path:inset(0 0 0 0)}
+/* ---- 出現：JSが動く時だけ隠す ---- */
+.js .rv{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);
+}
+.js .rv.in{opacity:1;transform:none}
 
 /* ============ HERO ============ */
 .hero{
-  min-height:100svh;padding-block:clamp(72px,11vh,130px) 0;
+  min-height:100svh;padding-block:clamp(72px,11vh,130px) 40px;
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
   gap:clamp(24px,5vw,72px);align-items:center;
 }
@@ -94,7 +93,8 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
   font-size:clamp(5.5rem,18vw,15rem);line-height:.78;letter-spacing:-.045em;
   margin:0 0 6px;display:flex;
 }
-.model span{display:inline-block;transform:translateY(115%);animation:drop .85s cubic-bezier(.16,1,.3,1) forwards}
+.model span{display:inline-block}
+.js .model span{transform:translateY(115%);animation:drop .85s cubic-bezier(.16,1,.3,1) forwards}
 .model span:nth-child(1){animation-delay:.10s}
 .model span:nth-child(2){animation-delay:.18s}
 .model span:nth-child(3){animation-delay:.26s}
@@ -102,10 +102,7 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 @keyframes drop{to{transform:none}}
 .model .num{color:var(--qr-red)}
 
-.hero h1{
-  font-size:clamp(1.05rem,2.2vw,1.6rem);font-weight:700;letter-spacing:.04em;
-  margin-bottom:14px;
-}
+.hero h1{font-size:clamp(1.05rem,2.2vw,1.6rem);font-weight:700;letter-spacing:.04em;margin-bottom:14px}
 .hero .lede{font-size:clamp(.95rem,1.15vw,1.05rem);max-width:44ch;color:#2B2F36}
 
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);
@@ -114,38 +111,96 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 .facts dt{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.16em;color:var(--ink-soft);margin:0 0 4px}
 .facts dd{margin:0;font-weight:700;font-size:.95rem;font-family:var(--f-mono)}
 
-/* ============ 筐体（シグネチャ） ============ */
+/* ============ ヒーロー筐体 ============ */
 .unit{width:100%;max-width:660px;margin-inline:auto;display:block;filter:drop-shadow(0 30px 50px rgba(20,22,26,.20))}
-.hint{
-  font-family:var(--f-mono);font-size:.7rem;letter-spacing:.14em;color:var(--ink-soft);
-  text-align:center;margin-top:14px;
-}
+.hint{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.14em;color:var(--ink-soft);text-align:center;margin-top:14px}
 .hint b{color:var(--qr-red);font-weight:700}
-
-.scanline{animation:scan 2.6s cubic-bezier(.5,0,.5,1) infinite;transform-origin:center}
+.scanline{animation:scan 2.6s cubic-bezier(.5,0,.5,1) infinite}
 @keyframes scan{0%,100%{transform:translateY(0);opacity:0}12%{opacity:1}50%{transform:translateY(30px);opacity:1}88%{opacity:0}}
 .breathe{animation:breathe 3.4s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.35}50%{opacity:.9}}
-.ring{opacity:0}
-.tapped .ring{animation:ring .9s ease-out}
+#unit .ring{opacity:0}
+#unit.tapped .ring{animation:ring .9s ease-out}
 @keyframes ring{0%{opacity:.85;transform:scale(.35)}100%{opacity:0;transform:scale(1.9)}}
-.flapL,.flapR{transition:transform .55s cubic-bezier(.16,1,.3,1)}
-.open .flapL{transform:translateX(-46px)}
-.open .flapR{transform:translateX(46px)}
+#unit .flapL,#unit .flapR{transition:transform .55s cubic-bezier(.16,1,.3,1)}
+#unit.open .flapL{transform:translateX(-46px)}
+#unit.open .flapR{transform:translateX(46px)}
+
+/* ==================================================
+   改札ゲート＝セクションの区切り（スクロールトリガー）
+   ================================================== */
+.gate{
+  position:relative;background:var(--tactile);
+  background-image:radial-gradient(circle at 50% 50%,rgba(20,22,26,.28) 3.2px,transparent 3.4px);
+  background-size:22px 22px;background-position:center;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(0,0,0,.14);
+  padding:10px 0 0;overflow:hidden;
+}
+.gate svg{display:block;width:100%;max-width:1000px;margin-inline:auto;height:auto}
+
+/* 通過ステータスの帯 */
+.gate .status{
+  height:8px;width:100%;background:#8A5E00;position:relative;overflow:hidden;
+}
+.gate .status::after{
+  content:"";position:absolute;inset:0;background:var(--go);
+  transform:scaleX(0);transform-origin:left;
+}
+.gate.pass .status::after{animation:statusGo 2.4s cubic-bezier(.5,0,.2,1) forwards .8s}
+@keyframes statusGo{to{transform:scaleX(1)}}
+
+/* ICカード */
+.card{opacity:0}
+.gate.pass .card{animation:cardGo 3.1s cubic-bezier(.42,0,.3,1) forwards}
+@keyframes cardGo{
+  0%   {opacity:0; transform:translate(0,0) rotate(-2deg)}
+  10%  {opacity:1; transform:translate(60px,0) rotate(-2deg)}
+  26%  {opacity:1; transform:translate(196px,-30px) rotate(-13deg)}
+  40%  {opacity:1; transform:translate(202px,-34px) rotate(-13deg)}
+  56%  {opacity:1; transform:translate(300px,0) rotate(0deg)}
+  88%  {opacity:1; transform:translate(700px,0) rotate(2deg)}
+  100% {opacity:0; transform:translate(780px,0) rotate(2deg)}
+}
+
+/* タッチのリング */
+.ping{opacity:0;transform-origin:center}
+.gate.pass .ping{animation:pingOut .95s ease-out .95s}
+@keyframes pingOut{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(2.1)}}
+
+/* フラップ */
+.fl{transform-origin:center;transition:none}
+.gate.pass .flL{animation:flL 2.1s cubic-bezier(.16,1,.3,1) forwards 1.05s}
+.gate.pass .flR{animation:flR 2.1s cubic-bezier(.16,1,.3,1) forwards 1.05s}
+@keyframes flL{0%{transform:translateX(0)}22%,78%{transform:translateX(-54px)}100%{transform:translateX(0)}}
+@keyframes flR{0%{transform:translateX(0)}22%,78%{transform:translateX(54px)}100%{transform:translateX(0)}}
+
+/* 表示器 */
+.gtxt{opacity:0}
+.gate.pass .gtxt{animation:gtxtIn 2.2s ease-out forwards 1.0s}
+@keyframes gtxtIn{0%{opacity:0}12%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.gled{fill:#3A3F47}
+.gate.pass .gled{animation:gled 2.4s steps(1) forwards 1.0s}
+@keyframes gled{0%{fill:#3A3F47}5%{fill:#3FA24B}88%{fill:#3FA24B}100%{fill:#3A3F47}}
+
+/* 手動でもう一度 */
+.replay{
+  position:absolute;right:clamp(14px,3vw,34px);bottom:16px;
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.14em;
+  background:rgba(20,22,26,.82);color:#F2C200;border:0;border-radius:2px;
+  padding:6px 11px;cursor:pointer;z-index:3;
+}
+.replay:hover{background:#14161A}
 
 /* ============ 年表 ============ */
-.timeline{display:grid;gap:0;border-top:1px solid var(--line)}
-.ev{
-  display:grid;grid-template-columns:150px 1fr;gap:clamp(14px,3vw,48px);
-  padding:24px 0;border-bottom:1px solid var(--line);align-items:baseline;
-  transition:background .35s;
-}
+.timeline{display:grid;border-top:1px solid var(--line)}
+.ev{display:grid;grid-template-columns:150px 1fr;gap:clamp(14px,3vw,48px);
+  padding:24px 0;border-bottom:1px solid var(--line);align-items:baseline;transition:background .35s}
 .ev:hover{background:rgba(255,255,255,.55)}
 .ev time{font-family:var(--f-mono);font-size:.85rem;font-weight:600;letter-spacing:.05em;color:var(--qr-red)}
 .ev h3{font-size:clamp(1.05rem,1.7vw,1.35rem);margin-bottom:6px}
 .ev p{margin:0;color:#3A3F47;font-size:.94rem;max-width:70ch}
 
-/* ============ 意匠グリッド ============ */
+/* ============ 意匠 ============ */
 .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
 .spec{background:var(--concrete);padding:30px 26px 34px;position:relative;overflow:hidden;transition:background .4s}
 .spec:hover{background:#F2F0EA}
@@ -156,7 +211,8 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 .spec:hover .bar{width:100%}
 
 /* ============ 比較 ============ */
-.cmp{width:100%;border-collapse:collapse;font-size:.92rem}
+.tblwrap{overflow-x:auto}
+.cmp{width:100%;border-collapse:collapse;font-size:.92rem;min-width:560px}
 .cmp th,.cmp td{padding:15px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .cmp thead th{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.16em;color:var(--ink-soft);border-bottom:2px solid var(--ink)}
 .cmp tbody th{font-weight:700;width:26%}
@@ -164,45 +220,32 @@ h1,h2,h3{margin:0;line-height:1.15;font-weight:900;letter-spacing:.01em}
 .cmp tbody tr{transition:background .3s}
 .cmp tbody tr:hover{background:rgba(255,255,255,.6)}
 
-/* ============ QRの流れ ============ */
+/* ============ QR ============ */
 .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:clamp(14px,2.4vw,26px);counter-reset:f}
-.node{
-  background:var(--panel);color:#E9EDF2;padding:26px 22px 28px;position:relative;
-  border-radius:3px;overflow:hidden;
-}
-.node::before{
-  counter-increment:f;content:counter(f,decimal-leading-zero);
-  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--amber);display:block;margin-bottom:14px;
-}
+.node{background:var(--panel);color:#E9EDF2;padding:26px 22px 28px;position:relative;border-radius:3px;overflow:hidden}
+.node::before{counter-increment:f;content:counter(f,decimal-leading-zero);
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.2em;color:var(--amber);display:block;margin-bottom:14px}
 .node h3{font-size:1rem;margin-bottom:8px;color:#fff}
 .node p{margin:0;font-size:.85rem;color:#98A1AC;line-height:1.7}
-.node::after{
-  content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;
+.node::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;
   background:linear-gradient(90deg,transparent,var(--suica),transparent);
-  transform:translateX(-100%);animation:pulse 3.2s linear infinite;
-}
+  transform:translateX(-100%);animation:pulse 3.2s linear infinite}
 .node:nth-child(2)::after{animation-delay:.5s}
 .node:nth-child(3)::after{animation-delay:1s}
 .node:nth-child(4)::after{animation-delay:1.5s}
 @keyframes pulse{to{transform:translateX(100%)}}
 
 /* ============ 用語 ============ */
-.warn{
-  border:2px solid var(--qr-red);background:rgba(206,43,33,.06);
-  padding:22px 24px;margin-bottom:38px;max-width:900px;
-}
+.warn{border:2px solid var(--qr-red);background:rgba(206,43,33,.06);padding:22px 24px;margin-bottom:38px;max-width:900px}
 .warn strong{display:block;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.18em;color:var(--qr-red);margin-bottom:8px}
 .warn p{margin:0;font-size:.92rem}
-
 .terms{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
 .term{background:var(--concrete);padding:26px clamp(18px,3vw,32px);display:grid;grid-template-columns:210px 1fr;gap:clamp(14px,3vw,40px)}
 .term .lex{display:flex;flex-direction:column;gap:4px}
 .term .lex b{font-size:1.5rem;font-weight:900;letter-spacing:.04em}
 .term .lex i{font-style:normal;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;color:var(--ink-soft)}
-.term .lex u{
-  text-decoration:none;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;
-  padding:3px 8px;border:1px solid currentColor;align-self:flex-start;margin-top:6px;
-}
+.term .lex u{text-decoration:none;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;
+  padding:3px 8px;border:1px solid currentColor;align-self:flex-start;margin-top:6px}
 .term .lex u.ng{color:var(--qr-red)}
 .term .lex u.ok{color:#2E7D32}
 .term .lex u.q{color:var(--ink-soft)}
@@ -214,28 +257,20 @@ footer{background:var(--panel);color:#8B939E;padding:clamp(48px,8vw,90px) 0 46px
 footer .dom{font-family:var(--f-disp);font-weight:900;font-size:clamp(2.6rem,9vw,6.5rem);color:#fff;letter-spacing:-.04em;line-height:.9;margin-bottom:26px}
 footer .dom em{font-style:normal;color:var(--qr-red)}
 footer ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px;font-family:var(--f-mono);font-size:.72rem;line-height:1.6}
-footer a{color:#B9C1CB;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2)}
-footer a:hover{color:#fff}
-
-section{padding-block:clamp(64px,9vw,120px)}
-.sec-head{margin-bottom:clamp(34px,5vw,58px);max-width:60ch}
-.sec-head h2{font-size:clamp(1.7rem,4.2vw,3.1rem);margin-bottom:14px}
-.sec-head p{margin:0;color:#3A3F47;font-size:.98rem}
 
 :focus-visible{outline:3px solid var(--qr-red);outline-offset:3px}
 
 @media (max-width:900px){
-  .hero{grid-template-columns:1fr;min-height:auto;padding-bottom:40px;gap:36px}
+  .hero{grid-template-columns:1fr;min-height:auto;gap:36px}
   .ev{grid-template-columns:1fr;gap:6px}
   .term{grid-template-columns:1fr;gap:12px}
   .facts{max-width:none}
-  .cmp tbody th{width:auto}
-  .cmp{font-size:.85rem}
+  .replay{bottom:8px;right:8px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
-  .rv{opacity:1;transform:none;clip-path:none}
-  .model span{transform:none}
+  .js .rv{opacity:1;transform:none}
+  .card,.gtxt,.ping{opacity:1}
 }
 </style>
 </head>
@@ -254,7 +289,6 @@ section{padding-block:clamp(64px,9vw,120px)}
       2022年12月11日、代々木駅。老朽化したEG20の置き換えとして最初の1台が動き出した。
       磁気券・交通系IC・QRコードの三つを一台で受ける、JR東日本メカトロニクス製の自動改札機である。
     </p>
-
     <dl class="facts">
       <div><dt>稼働開始</dt><dd>2022.12.11</dd></div>
       <div><dt>第一号機</dt><dd>代々木駅</dd></div>
@@ -264,98 +298,92 @@ section{padding-block:clamp(64px,9vw,120px)}
   </div>
 
   <div>
-    <!-- ====== シグネチャ：EG40 筐体上面 ====== -->
-    <svg class="unit" id="unit" viewBox="0 0 620 400" role="img" aria-label="EG40 自動改札機の上面図。ICリーダーとQRコード読取口をクリックできます。">
+    <svg class="unit" id="unit" viewBox="0 0 620 400" role="img" aria-label="EG40 自動改札機の上面図。ICリーダーとQRコード読取口を操作できます。">
       <defs>
-        <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#DEDCD6"/><stop offset=".55" stop-color="#C6C4BE"/><stop offset="1" stop-color="#A9A7A1"/>
-        </linearGradient>
-        <linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#EFEDE7"/><stop offset="1" stop-color="#CBC9C3"/>
-        </linearGradient>
-        <linearGradient id="gSuica" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#33BEE6"/><stop offset="1" stop-color="#0083AC"/>
-        </linearGradient>
-        <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#E2483D"/><stop offset="1" stop-color="#A81C14"/>
+        <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DEDCD6"/><stop offset=".55" stop-color="#C6C4BE"/><stop offset="1" stop-color="#A9A7A1"/></linearGradient>
+        <linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EFEDE7"/><stop offset="1" stop-color="#CBC9C3"/></linearGradient>
+        <linearGradient id="gSuica" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33BEE6"/><stop offset="1" stop-color="#0083AC"/></linearGradient>
+        <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E2483D"/><stop offset="1" stop-color="#A81C14"/></linearGradient>
+        <linearGradient id="gRb" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#CE2B21"/><stop offset=".25" stop-color="#F0A32B"/>
+          <stop offset=".5" stop-color="#8CC63F"/><stop offset=".75" stop-color="#00A3D4"/><stop offset="1" stop-color="#6B5BD2"/>
         </linearGradient>
         <clipPath id="cQR"><rect x="372" y="196" width="118" height="54" rx="9"/></clipPath>
       </defs>
 
-      <!-- 通路の影 -->
       <ellipse cx="310" cy="368" rx="250" ry="18" fill="rgba(20,22,26,.10)"/>
-
-      <!-- 筐体 本体 -->
       <rect x="60" y="120" width="500" height="215" rx="16" fill="url(#gBody)"/>
-      <!-- 上面 -->
       <path d="M60 136 Q60 120 76 120 L544 120 Q560 120 560 136 L560 214 Q310 240 60 214 Z" fill="url(#gTop)"/>
 
-      <!-- 虹（改札突破対策の検知帯） -->
-      <g opacity=".85">
-        <rect x="60" y="112" width="500" height="6" rx="3" fill="#2A2E34"/>
-        <rect x="70" y="113.5" width="480" height="3" rx="1.5" fill="url(#gRb)"/>
-        <linearGradient id="gRb" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#CE2B21"/><stop offset=".25" stop-color="#F0A32B"/>
-          <stop offset=".5" stop-color="#8CC63F"/><stop offset=".75" stop-color="#00A3D4"/>
-          <stop offset="1" stop-color="#6B5BD2"/>
-        </linearGradient>
-      </g>
+      <rect x="60" y="112" width="500" height="6" rx="3" fill="#2A2E34"/>
+      <rect x="70" y="113.5" width="480" height="3" rx="1.5" fill="url(#gRb)"/>
 
-      <!-- 表示パネル（残高・エラー集約） -->
       <rect x="88" y="146" width="228" height="86" rx="8" fill="#0E1114"/>
       <rect x="88" y="146" width="228" height="86" rx="8" fill="none" stroke="#7E7C77" stroke-width="1.5"/>
-      <text id="panelMain" x="202" y="188" text-anchor="middle" font-family="M PLUS 1 Code, monospace"
-            font-size="26" font-weight="700" fill="#F0A32B" letter-spacing="2">- - - - -</text>
-      <text id="panelSub" x="202" y="212" text-anchor="middle" font-family="M PLUS 1 Code, monospace"
-            font-size="11" fill="#6F7A85" letter-spacing="3">READY</text>
+      <text id="panelMain" x="202" y="188" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="26" font-weight="700" fill="#F0A32B" letter-spacing="2">- - - - -</text>
+      <text id="panelSub" x="202" y="212" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="11" fill="#6F7A85" letter-spacing="3">READY</text>
 
-      <!-- ICリーダー（うねりのある造形） -->
       <g id="suicaZone" style="cursor:pointer">
         <path d="M352 150 Q400 138 452 150 Q506 162 542 150 L542 186 Q506 198 452 186 Q400 174 352 186 Z" fill="#8F8D88" opacity=".35"/>
         <rect x="366" y="150" width="132" height="40" rx="10" fill="url(#gSuica)"/>
         <circle class="ring" cx="432" cy="170" r="30" fill="none" stroke="#8CC63F" stroke-width="4"/>
         <g class="breathe" fill="none" stroke="#EAF7FF" stroke-width="2.6" stroke-linecap="round">
-          <path d="M420 162 a11 11 0 0 1 0 16"/>
-          <path d="M427 157 a19 19 0 0 1 0 26"/>
-          <path d="M434 152 a27 27 0 0 1 0 36"/>
+          <path d="M420 162 a11 11 0 0 1 0 16"/><path d="M427 157 a19 19 0 0 1 0 26"/><path d="M434 152 a27 27 0 0 1 0 36"/>
         </g>
         <text x="384" y="176" font-family="M PLUS 1 Code, monospace" font-size="12" font-weight="700" fill="#fff">IC</text>
       </g>
 
-      <!-- QRコード読取口（赤） -->
       <g id="qrZone" style="cursor:pointer">
         <rect x="366" y="190" width="130" height="66" rx="12" fill="#2A2E34"/>
         <rect x="372" y="196" width="118" height="54" rx="9" fill="url(#gRed)"/>
-        <g clip-path="url(#cQR)">
-          <rect class="scanline" x="372" y="200" width="118" height="3" fill="#FFE9E6" opacity=".9"/>
-        </g>
+        <g clip-path="url(#cQR)"><rect class="scanline" x="372" y="200" width="118" height="3" fill="#FFE9E6" opacity=".9"/></g>
         <g fill="#fff" opacity=".92">
           <rect x="384" y="208" width="9" height="9"/><rect x="384" y="230" width="9" height="9"/>
-          <rect x="406" y="208" width="9" height="9"/>
-          <rect x="395" y="219" width="5" height="5"/><rect x="406" y="230" width="5" height="5"/>
+          <rect x="406" y="208" width="9" height="9"/><rect x="395" y="219" width="5" height="5"/><rect x="406" y="230" width="5" height="5"/>
         </g>
         <text x="428" y="228" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff" letter-spacing="1">QR</text>
       </g>
 
-      <!-- 投入口 -->
       <rect x="92" y="248" width="118" height="10" rx="5" fill="#2A2E34"/>
       <text x="92" y="278" font-family="M PLUS 1 Code, monospace" font-size="10" fill="#5A5F68" letter-spacing="2">MAGNETIC</text>
 
-      <!-- フラップドア -->
-      <g id="flaps">
-        <path class="flapL" d="M232 262 q40 12 40 46 l-46 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
-        <path class="flapR" d="M392 262 q-40 12 -40 46 l46 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
-      </g>
+      <path class="flapL" d="M232 262 q40 12 40 46 l-46 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+      <path class="flapR" d="M392 262 q-40 12 -40 46 l46 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
 
-      <!-- 型番刻印 -->
-      <text x="504" y="278" text-anchor="end" font-family="Archivo, sans-serif" font-size="15" font-weight="900"
-            fill="#8B8984" letter-spacing="1">EG40</text>
+      <text x="504" y="278" text-anchor="end" font-family="Archivo, sans-serif" font-size="15" font-weight="900" fill="#8B8984" letter-spacing="1">EG40</text>
     </svg>
     <p class="hint">▲ <b>ICリーダー</b>と<b>QR読取口</b>にふれてみてください</p>
   </div>
 </header>
 
-<div class="tactile" aria-hidden="true"></div>
+<!-- ============ GATE 01 ============ -->
+<div class="gate" data-dest="沿 革" data-fare="¥ 3,280">
+  <svg viewBox="0 0 1000 130" aria-hidden="true">
+    <g class="gbody"></g>
+    <rect x="250" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/>
+    <rect x="250" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="630" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/>
+    <rect x="630" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="266" y="48" width="76" height="28" rx="8" fill="#00A3D4"/>
+    <text x="276" y="68" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff">IC</text>
+    <circle class="ping" cx="304" cy="62" r="20" fill="none" stroke="#3FA24B" stroke-width="3.5"/>
+    <rect x="266" y="84" width="76" height="24" rx="6" fill="#CE2B21"/>
+    <rect x="646" y="48" width="88" height="46" rx="6" fill="#0E1114"/>
+    <text class="gtxt dest" x="690" y="70" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="14" font-weight="700" fill="#F0A32B"></text>
+    <text class="gtxt fare" x="690" y="86" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="10" fill="#6F7A85"></text>
+    <circle class="gled" cx="500" cy="18" r="6"/>
+    <path class="fl flL" d="M370 74 q46 10 46 46 l-52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <path class="fl flR" d="M630 74 q-46 10 -46 46 l52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <g class="card">
+      <rect x="60" y="58" width="86" height="54" rx="7" fill="#F6F5F1" stroke="#B4B2AC" stroke-width="1.5"/>
+      <rect x="60" y="58" width="86" height="14" rx="7" fill="#3FA24B"/>
+      <rect x="70" y="82" width="20" height="16" rx="3" fill="#D8B24A"/>
+      <text x="98" y="106" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#8B8984">IC</text>
+    </g>
+  </svg>
+  <div class="status"></div>
+  <button class="replay" type="button">もう一度通る</button>
+</div>
 
 <!-- ================= 沿革 ================= -->
 <section class="wrap" id="history">
@@ -364,46 +392,42 @@ section{padding-block:clamp(64px,9vw,120px)}
     <h2>置き換えは、ひとつの駅から始まった</h2>
     <p>EG40は新機能のための新型機であると同時に、耐用年数を迎えたEG20の後継でもある。だから展開は「線」ではなく「点」で進み、いま気づけば首都圏でも地方でもこの顔になっている。</p>
   </div>
-
   <div class="timeline">
-    <article class="ev rv"><time>2022.11.08</time><div>
-      <h3>QR乗車サービスを発表</h3>
-      <p>JR東日本が、えきねっとで購入した乗車券をスマホのQRコードで使える構想を公表。あわせて、老朽取替に合わせてQRリーダー搭載の新型改札機を順次設置すると告知した。</p>
-    </div></article>
-
-    <article class="ev rv"><time>2022.12.11</time><div>
-      <h3>代々木駅で第一号機が稼働</h3>
-      <p>山手線・中央総武線各駅停車の代々木駅に設置。この時点ではQR乗車は未開始で、赤い読取口は黒いフタで塞がれていた。</p>
-    </div></article>
-
-    <article class="ev rv"><time>2022.12.18</time><div>
-      <h3>東大宮駅（宇都宮線）</h3>
-      <p>都心以外への設置も同月中に始まる。首都圏中心という当初の予想を早々に裏切った。</p>
-    </div></article>
-
-    <article class="ev rv"><time>2023.03.18</time><div>
-      <h3>幕張豊砂駅、開業時からEG40</h3>
-      <p>京葉線の新駅。最初からこの機種で揃えられた、いわば「EG40ネイティブ」な駅のひとつ。</p>
-    </div></article>
-
-    <article class="ev rv"><time>2023.12.24</time><div>
-      <h3>武蔵小杉駅 綱島街道改札</h3>
-      <p>新設改札口に開業時から採用。既存駅の改良でも新設側から入っていくパターンが定着する。</p>
-    </div></article>
-
-    <article class="ev rv"><time>2024年度下期</time><div>
-      <h3>東北エリアでQR乗車を開始</h3>
-      <p>赤いフタが外れる。えきねっとで予約した乗車券・特急券を1つのQRに集約し、在来線と新幹線をまたいで通過できる運用が始まった。</p>
-    </div></article>
-
-    <article class="ev rv"><time>現在</time><div>
-      <h3>エリアを問わず置き換えが進行中</h3>
-      <p>仙台空港駅のような地方の駅から東京駅まで。利用の少ない駅にはドアのない仕様も設置され、EG20を見かける機会は着実に減っている。</p>
-    </div></article>
+    <article class="ev rv"><time>2022.11.08</time><div><h3>QR乗車サービスを発表</h3><p>JR東日本が、えきねっとで購入した乗車券をスマホのQRコードで使える構想を公表。あわせて、老朽取替に合わせてQRリーダー搭載の新型改札機を順次設置すると告知した。</p></div></article>
+    <article class="ev rv"><time>2022.12.11</time><div><h3>代々木駅で第一号機が稼働</h3><p>山手線・中央総武線各駅停車の代々木駅に設置。この時点ではQR乗車は未開始で、赤い読取口は黒いフタで塞がれていた。</p></div></article>
+    <article class="ev rv"><time>2022.12.18</time><div><h3>東大宮駅（宇都宮線）</h3><p>都心以外への設置も同月中に始まる。首都圏中心という当初の予想を早々に裏切った。</p></div></article>
+    <article class="ev rv"><time>2023.03.18</time><div><h3>幕張豊砂駅、開業時からEG40</h3><p>京葉線の新駅。最初からこの機種で揃えられた、いわば「EG40ネイティブ」な駅のひとつ。</p></div></article>
+    <article class="ev rv"><time>2023.12.24</time><div><h3>武蔵小杉駅 綱島街道改札</h3><p>新設改札口に開業時から採用。既存駅の改良でも新設側から入っていくパターンが定着する。</p></div></article>
+    <article class="ev rv"><time>2024年度下期</time><div><h3>東北エリアでQR乗車を開始</h3><p>赤いフタが外れる。えきねっとで予約した乗車券・特急券を1つのQRに集約し、在来線と新幹線をまたいで通過できる運用が始まった。</p></div></article>
+    <article class="ev rv"><time>現在</time><div><h3>エリアを問わず置き換えが進行中</h3><p>仙台空港駅のような地方の駅から東京駅まで。利用の少ない駅にはドアのない仕様も設置され、EG20を見かける機会は着実に減っている。</p></div></article>
   </div>
 </section>
 
-<div class="tactile" aria-hidden="true"></div>
+<!-- ============ GATE 02 ============ -->
+<div class="gate" data-dest="意 匠" data-fare="IC TOUCHED">
+  <svg viewBox="0 0 1000 130" aria-hidden="true">
+    <rect x="250" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="250" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="630" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="630" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="266" y="48" width="76" height="28" rx="8" fill="#00A3D4"/>
+    <text x="276" y="68" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff">IC</text>
+    <circle class="ping" cx="304" cy="62" r="20" fill="none" stroke="#3FA24B" stroke-width="3.5"/>
+    <rect x="266" y="84" width="76" height="24" rx="6" fill="#CE2B21"/>
+    <rect x="646" y="48" width="88" height="46" rx="6" fill="#0E1114"/>
+    <text class="gtxt dest" x="690" y="70" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="14" font-weight="700" fill="#F0A32B"></text>
+    <text class="gtxt fare" x="690" y="86" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="10" fill="#6F7A85"></text>
+    <circle class="gled" cx="500" cy="18" r="6"/>
+    <path class="fl flL" d="M370 74 q46 10 46 46 l-52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <path class="fl flR" d="M630 74 q-46 10 -46 46 l52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <g class="card">
+      <rect x="60" y="58" width="86" height="54" rx="7" fill="#F6F5F1" stroke="#B4B2AC" stroke-width="1.5"/>
+      <rect x="60" y="58" width="86" height="14" rx="7" fill="#3FA24B"/>
+      <rect x="70" y="82" width="20" height="16" rx="3" fill="#D8B24A"/>
+      <text x="98" y="106" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#8B8984">IC</text>
+    </g>
+  </svg>
+  <div class="status"></div>
+  <button class="replay" type="button">もう一度通る</button>
+</div>
 
 <!-- ================= 意匠 ================= -->
 <section class="wrap" id="design">
@@ -412,48 +436,41 @@ section{padding-block:clamp(64px,9vw,120px)}
     <h2>見分け方は、だいたい上面に出ている</h2>
     <p>遠目にはどれも同じ灰色の箱に見えるが、EG40はEG20から造形をかなり動かしている。ホームに降りたとき何を見ればいいか。</p>
   </div>
-
   <div class="spec-grid rv">
-    <div class="spec">
-      <span class="tag">POINT / 01</span>
-      <h3>赤いQRコード読取口</h3>
-      <p>最大の識別点。灰色の筐体に赤が一箇所だけ差さる。サービス開始前は黒いフタで覆われていたため、フタの有無で設置時期の当たりがつく。</p>
-      <span class="bar"></span>
-    </div>
-    <div class="spec">
-      <span class="tag">POINT / 02</span>
-      <h3>うねるICリーダー面</h3>
-      <p>EG20の平坦な面に対し、Suicaを当てる部分に大きな起伏がある。エッジを立てつつ曲線でつなぐ処理で、手が自然に降りる位置を作っている。</p>
-      <span class="bar"></span>
-    </div>
-    <div class="spec">
-      <span class="tag">POINT / 03</span>
-      <h3>表示パネルの集約</h3>
-      <p>EG20では残高表示器とエラー表示器が別々の位置に分かれていた。EG40は従来のエラー表示器の位置に一枚のパネルとしてまとめている。</p>
-      <span class="bar"></span>
-    </div>
-    <div class="spec">
-      <span class="tag">POINT / 04</span>
-      <h3>ドアなし仕様</h3>
-      <p>利用者の少ない駅では、フラップドアを持たない構成で設置される。通り抜けは自由で、無効時に音と表示で知らせる運用。</p>
-      <span class="bar"></span>
-    </div>
-    <div class="spec">
-      <span class="tag">POINT / 05</span>
-      <h3>通称「虹」の継承</h3>
-      <p>改札の不正通過対策としてJRの改札機に多数設置されている検知機構。EG40も引き続き採用しており、鳴動条件は従来どおりだが音質が大きく改善された。</p>
-      <span class="bar"></span>
-    </div>
-    <div class="spec">
-      <span class="tag">POINT / 06</span>
-      <h3>三媒体対応</h3>
-      <p>磁気券の投入口、交通系ICのリーダー、QRの読取口を一台に同居させている。過去・現在・これからが一つの上面に並んでいる。</p>
-      <span class="bar"></span>
-    </div>
+    <div class="spec"><span class="tag">POINT / 01</span><h3>赤いQRコード読取口</h3><p>最大の識別点。灰色の筐体に赤が一箇所だけ差さる。サービス開始前は黒いフタで覆われていたため、フタの有無で設置時期の当たりがつく。</p><span class="bar"></span></div>
+    <div class="spec"><span class="tag">POINT / 02</span><h3>うねるICリーダー面</h3><p>EG20の平坦な面に対し、Suicaを当てる部分に大きな起伏がある。エッジを立てつつ曲線でつなぐ処理で、手が自然に降りる位置を作っている。</p><span class="bar"></span></div>
+    <div class="spec"><span class="tag">POINT / 03</span><h3>表示パネルの集約</h3><p>EG20では残高表示器とエラー表示器が別々の位置に分かれていた。EG40は従来のエラー表示器の位置に一枚のパネルとしてまとめている。</p><span class="bar"></span></div>
+    <div class="spec"><span class="tag">POINT / 04</span><h3>ドアなし仕様</h3><p>利用者の少ない駅では、フラップドアを持たない構成で設置される。通り抜けは自由で、無効時に音と表示で知らせる運用。</p><span class="bar"></span></div>
+    <div class="spec"><span class="tag">POINT / 05</span><h3>通称「虹」の継承</h3><p>改札の不正通過対策としてJRの改札機に多数設置されている検知機構。EG40も引き続き採用しており、鳴動条件は従来どおりだが音質が大きく改善された。</p><span class="bar"></span></div>
+    <div class="spec"><span class="tag">POINT / 06</span><h3>三媒体対応</h3><p>磁気券の投入口、交通系ICのリーダー、QRの読取口を一台に同居させている。過去・現在・これからが一つの上面に並んでいる。</p><span class="bar"></span></div>
   </div>
 </section>
 
-<div class="tactile" aria-hidden="true"></div>
+<!-- ============ GATE 03 ============ -->
+<div class="gate" data-dest="EG20 → EG40" data-fare="COMPARE">
+  <svg viewBox="0 0 1000 130" aria-hidden="true">
+    <rect x="250" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="250" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="630" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="630" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="266" y="48" width="76" height="28" rx="8" fill="#00A3D4"/>
+    <text x="276" y="68" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff">IC</text>
+    <circle class="ping" cx="304" cy="62" r="20" fill="none" stroke="#3FA24B" stroke-width="3.5"/>
+    <rect x="266" y="84" width="76" height="24" rx="6" fill="#CE2B21"/>
+    <rect x="646" y="48" width="88" height="46" rx="6" fill="#0E1114"/>
+    <text class="gtxt dest" x="690" y="70" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="12" font-weight="700" fill="#F0A32B"></text>
+    <text class="gtxt fare" x="690" y="86" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="10" fill="#6F7A85"></text>
+    <circle class="gled" cx="500" cy="18" r="6"/>
+    <path class="fl flL" d="M370 74 q46 10 46 46 l-52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <path class="fl flR" d="M630 74 q-46 10 -46 46 l52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <g class="card">
+      <rect x="60" y="58" width="86" height="54" rx="7" fill="#F6F5F1" stroke="#B4B2AC" stroke-width="1.5"/>
+      <rect x="60" y="58" width="86" height="14" rx="7" fill="#3FA24B"/>
+      <rect x="70" y="82" width="20" height="16" rx="3" fill="#D8B24A"/>
+      <text x="98" y="106" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#8B8984">IC</text>
+    </g>
+  </svg>
+  <div class="status"></div>
+  <button class="replay" type="button">もう一度通る</button>
+</div>
 
 <!-- ================= 比較 ================= -->
 <section class="wrap" id="compare">
@@ -461,22 +478,46 @@ section{padding-block:clamp(64px,9vw,120px)}
     <p class="eyebrow">03 — EG20 との比較</p>
     <h2>何が変わったのか</h2>
   </div>
-  <div class="rv">
-  <table class="cmp">
-    <thead><tr><th>項目</th><th>EG20</th><th>EG40</th></tr></thead>
-    <tbody>
-      <tr><th>QRコード</th><td>非対応</td><td>一部通路に赤い読取口を搭載</td></tr>
-      <tr><th>ICリーダー面</th><td>平坦</td><td>大きなうねりのある曲面</td></tr>
-      <tr><th>表示器</th><td>残高／エラーが分散配置</td><td>一枚のパネルに集約</td></tr>
-      <tr><th>虹（不正通過検知）</th><td>搭載</td><td>搭載。鳴動条件は同等、音質を改善</td></tr>
-      <tr><th>ドアなし仕様</th><td>あり</td><td>あり（小規模駅向け）</td></tr>
-      <tr><th>立ち位置</th><td>長く標準機だった前世代</td><td>老朽取替の受け皿となる現行機</td></tr>
-    </tbody>
-  </table>
+  <div class="rv tblwrap">
+    <table class="cmp">
+      <thead><tr><th>項目</th><th>EG20</th><th>EG40</th></tr></thead>
+      <tbody>
+        <tr><th>QRコード</th><td>非対応</td><td>一部通路に赤い読取口を搭載</td></tr>
+        <tr><th>ICリーダー面</th><td>平坦</td><td>大きなうねりのある曲面</td></tr>
+        <tr><th>表示器</th><td>残高／エラーが分散配置</td><td>一枚のパネルに集約</td></tr>
+        <tr><th>虹（不正通過検知）</th><td>搭載</td><td>搭載。鳴動条件は同等、音質を改善</td></tr>
+        <tr><th>ドアなし仕様</th><td>あり</td><td>あり（小規模駅向け）</td></tr>
+        <tr><th>立ち位置</th><td>長く標準機だった前世代</td><td>老朽取替の受け皿となる現行機</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
-<div class="tactile" aria-hidden="true"></div>
+<!-- ============ GATE 04 ============ -->
+<div class="gate" data-dest="QR 乗 車" data-fare="SERVER VERIFY">
+  <svg viewBox="0 0 1000 130" aria-hidden="true">
+    <rect x="250" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="250" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="630" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="630" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="266" y="48" width="76" height="28" rx="8" fill="#00A3D4"/>
+    <text x="276" y="68" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff">IC</text>
+    <circle class="ping" cx="304" cy="62" r="20" fill="none" stroke="#3FA24B" stroke-width="3.5"/>
+    <rect x="266" y="84" width="76" height="24" rx="6" fill="#CE2B21"/>
+    <rect x="646" y="48" width="88" height="46" rx="6" fill="#0E1114"/>
+    <text class="gtxt dest" x="690" y="70" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="14" font-weight="700" fill="#F0A32B"></text>
+    <text class="gtxt fare" x="690" y="86" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#6F7A85"></text>
+    <circle class="gled" cx="500" cy="18" r="6"/>
+    <path class="fl flL" d="M370 74 q46 10 46 46 l-52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <path class="fl flR" d="M630 74 q-46 10 -46 46 l52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <g class="card">
+      <rect x="60" y="58" width="86" height="54" rx="7" fill="#F6F5F1" stroke="#B4B2AC" stroke-width="1.5"/>
+      <rect x="60" y="58" width="86" height="14" rx="7" fill="#3FA24B"/>
+      <rect x="70" y="82" width="20" height="16" rx="3" fill="#D8B24A"/>
+      <text x="98" y="106" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#8B8984">IC</text>
+    </g>
+  </svg>
+  <div class="status"></div>
+  <button class="replay" type="button">もう一度通る</button>
+</div>
 
 <!-- ================= QRの仕組み ================= -->
 <section class="wrap" id="qr">
@@ -485,7 +526,6 @@ section{padding-block:clamp(64px,9vw,120px)}
     <h2>紙にもICにも記録しない。判定はサーバにある</h2>
     <p>磁気券は券面裏の磁気層に、ICカードはチップに情報を持つ。QR乗車はどちらでもない。改札機は読み取った情報をその都度センターサーバに問い合わせ、有効かどうかの答えを受け取る。</p>
   </div>
-
   <div class="flow rv">
     <div class="node"><h3>えきねっとで購入</h3><p>乗車券と特急券をまとめて予約。予約情報がセンターサーバへ連携される。</p></div>
     <div class="node"><h3>アプリにQRを表示</h3><p>同じ区間でも発行のたびに異なる固有のコードが生成される。使い回しはできない。</p></div>
@@ -494,7 +534,30 @@ section{padding-block:clamp(64px,9vw,120px)}
   </div>
 </section>
 
-<div class="tactile" aria-hidden="true"></div>
+<!-- ============ GATE 05 ============ -->
+<div class="gate" data-dest="界 隈 用 語" data-fare="TERMS"><svg viewBox="0 0 1000 130" aria-hidden="true">
+    <rect x="250" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="250" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="630" y="26" width="120" height="94" rx="10" fill="#C6C4BE"/><rect x="630" y="26" width="120" height="16" rx="6" fill="#EFEDE7"/>
+    <rect x="266" y="48" width="76" height="28" rx="8" fill="#00A3D4"/>
+    <text x="276" y="68" font-family="M PLUS 1 Code, monospace" font-size="11" font-weight="700" fill="#fff">IC</text>
+    <circle class="ping" cx="304" cy="62" r="20" fill="none" stroke="#3FA24B" stroke-width="3.5"/>
+    <rect x="266" y="84" width="76" height="24" rx="6" fill="#CE2B21"/>
+    <rect x="646" y="48" width="88" height="46" rx="6" fill="#0E1114"/>
+    <text class="gtxt dest" x="690" y="70" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="13" font-weight="700" fill="#F0A32B"></text>
+    <text class="gtxt fare" x="690" y="86" text-anchor="middle" font-family="M PLUS 1 Code, monospace" font-size="10" fill="#6F7A85"></text>
+    <circle class="gled" cx="500" cy="18" r="6"/>
+    <path class="fl flL" d="M370 74 q46 10 46 46 l-52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <path class="fl flR" d="M630 74 q-46 10 -46 46 l52 0 z" fill="#F2A200" stroke="#8A5E00" stroke-width="1.5"/>
+    <g class="card">
+      <rect x="60" y="58" width="86" height="54" rx="7" fill="#F6F5F1" stroke="#B4B2AC" stroke-width="1.5"/>
+      <rect x="60" y="58" width="86" height="14" rx="7" fill="#3FA24B"/>
+      <rect x="70" y="82" width="20" height="16" rx="3" fill="#D8B24A"/>
+      <text x="98" y="106" font-family="M PLUS 1 Code, monospace" font-size="9" fill="#8B8984">IC</text>
+    </g>
+  </svg>
+  <div class="status"></div>
+  <button class="replay" type="button">もう一度通る</button>
+</div>
 
 <!-- ================= 用語 ================= -->
 <section class="wrap" id="terms">
@@ -510,7 +573,6 @@ section{padding-block:clamp(64px,9vw,120px)}
   </div>
 
   <div class="terms rv">
-
     <article class="term">
       <div class="lex"><b>尖閣</b><i>せんかく</i><u class="ng">不正乗車の隠語</u></div>
       <div>
@@ -518,7 +580,6 @@ section{padding-block:clamp(64px,9vw,120px)}
         <p>誤解されがちだが<strong>鉄道趣味者の用語ではない</strong>。主な使用層は音楽ゲーム界隈などで、未成年の比率が高い場に「ゲームの裏技」めいた感覚で広まった経緯がある。撮り鉄の迷惑行為と結びつけて語られることがあるが、由来としては別筋である。</p>
       </div>
     </article>
-
     <article class="term">
       <div class="lex"><b>幹脱</b><i>かんだつ</i><u class="q">要検証</u></div>
       <div>
@@ -526,35 +587,22 @@ section{padding-block:clamp(64px,9vw,120px)}
         <p>本サイトでは<strong>裏取りできていない語</strong>として扱う。確度の高い一次情報をお持ちの方は連絡してほしい。</p>
       </div>
     </article>
-
     <article class="term">
       <div class="lex"><b>虹</b><i>にじ</i><u class="ok">通称・一般</u></div>
-      <div>
-        <p>改札の不正通過対策としてJRの改札機に多数設置されている検知機構の通称。隠語というより、ファンのあいだで普通に通じる呼び名。EG40も継承しており、鳴動条件は従来機と同じまま音質が改善された。</p>
-      </div>
+      <div><p>改札の不正通過対策としてJRの改札機に多数設置されている検知機構の通称。隠語というより、ファンのあいだで普通に通じる呼び名。EG40も継承しており、鳴動条件は従来機と同じまま音質が改善された。</p></div>
     </article>
-
     <article class="term">
       <div class="lex"><b>キセル</b><i>きせる</i><u class="ng">不正乗車の俗称</u></div>
-      <div>
-        <p>両端だけ運賃を払い、中間区間の運賃を免れる古典的な不正乗車。煙管が「両端が金属、中間は竹」であることに由来する。</p>
-      </div>
+      <div><p>両端だけ運賃を払い、中間区間の運賃を免れる古典的な不正乗車。煙管が「両端が金属、中間は竹」であることに由来する。</p></div>
     </article>
-
     <article class="term">
       <div class="lex"><b>薩摩守</b><i>さつまのかみ</i><u class="ng">不正乗車の符丁</u></div>
-      <div>
-        <p>無賃乗車を指す古い言い回し。薩摩守だった平忠度（たいらのただのり）の名を「ただ乗り」に掛けた洒落で、狂言の演目名としても知られる。</p>
-      </div>
+      <div><p>無賃乗車を指す古い言い回し。薩摩守だった平忠度（たいらのただのり）の名を「ただ乗り」に掛けた洒落で、狂言の演目名としても知られる。</p></div>
     </article>
-
     <article class="term">
       <div class="lex"><b>EG20 / EG40</b><i>いーじーにじゅう・よんじゅう</i><u class="ok">機種名</u></div>
-      <div>
-        <p>JR東日本メカトロニクス製の自動改札機の機種名。ファンのあいだでは駅名と機種名をセットで語るのが常で、「◯◯駅がEG40に更新された」という報告がSNSに日々流れている。</p>
-      </div>
+      <div><p>JR東日本メカトロニクス製の自動改札機の機種名。ファンのあいだでは駅名と機種名をセットで語るのが常で、「◯◯駅がEG40に更新された」という報告がSNSに日々流れている。</p></div>
     </article>
-
   </div>
 </section>
 
@@ -575,43 +623,85 @@ section{padding-block:clamp(64px,9vw,120px)}
 
 <script>
 (function(){
-  /* --- スクロール出現 --- */
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  var doc = document;
 
-  /* --- 筐体のインタラクション --- */
-  var unit  = document.getElementById('unit');
-  var main  = document.getElementById('panelMain');
-  var sub   = document.getElementById('panelSub');
-  var suica = document.getElementById('suicaZone');
-  var qr    = document.getElementById('qrZone');
+  function showAll(){
+    var n = doc.querySelectorAll('.rv');
+    for(var i=0;i<n.length;i++) n[i].classList.add('in');
+  }
+
+  /* --- フォールバック1: IntersectionObserver が無い環境 --- */
+  if(!('IntersectionObserver' in window)){ showAll(); }
+
+  /* --- フォールバック2: 何があっても3秒後には全部出す --- */
+  setTimeout(showAll, 3000);
+
+  try{
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:0, rootMargin:'0px 0px -6% 0px'});
+    doc.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  }catch(err){ showAll(); }
+
+  /* ============ 改札ゲート：スクロールで通過 ============ */
+  var gates = Array.prototype.slice.call(doc.querySelectorAll('.gate'));
+
+  function runGate(g){
+    var dest = g.querySelector('.dest'), fare = g.querySelector('.fare');
+    if(dest) dest.textContent = g.dataset.dest || '';
+    if(fare) fare.textContent = g.dataset.fare || '';
+    g.classList.remove('pass');
+    void g.offsetWidth;           /* リフローで再生をリセット */
+    g.classList.add('pass');
+    clearTimeout(g._t);
+    g._t = setTimeout(function(){ g.classList.remove('pass'); }, 3400);
+  }
+
+  try{
+    var gio = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ runGate(e.target); gio.unobserve(e.target); }
+      });
+    },{threshold:.5});
+    gates.forEach(function(g){ gio.observe(g); });
+  }catch(err){ /* 動かなくてもゲートは静止画として成立する */ }
+
+  gates.forEach(function(g){
+    var b = g.querySelector('.replay');
+    if(b) b.addEventListener('click', function(){ runGate(g); });
+  });
+
+  /* ============ ヒーロー筐体 ============ */
+  var unit  = doc.getElementById('unit');
+  var pMain = doc.getElementById('panelMain');
+  var pSub  = doc.getElementById('panelSub');
+  var suica = doc.getElementById('suicaZone');
+  var qr    = doc.getElementById('qrZone');
   var busy  = false;
 
-  function pass(mainTxt, subTxt, cls){
-    if(busy) return; busy = true;
-    unit.classList.add(cls, 'open');
-    main.textContent = mainTxt;
-    sub.textContent  = subTxt;
+  function pass(m, s){
+    if(busy || !unit) return; busy = true;
+    unit.classList.add('tapped','open');
+    pMain.textContent = m; pSub.textContent = s;
     setTimeout(function(){
-      unit.classList.remove('open', cls);
-      main.textContent = '- - - - -';
-      sub.textContent  = 'READY';
+      unit.classList.remove('open','tapped');
+      pMain.textContent = '- - - - -'; pSub.textContent = 'READY';
       busy = false;
     }, 1900);
   }
 
-  suica.addEventListener('click', function(){ pass('¥ 3,280', 'IC  TOUCHED', 'tapped'); });
-  qr.addEventListener('click',    function(){ pass('東京 → 盛岡', 'QR  VERIFIED', 'tapped'); });
-
-  [suica, qr].forEach(function(el){
-    el.setAttribute('tabindex','0');
-    el.setAttribute('role','button');
-    el.addEventListener('keydown', function(ev){
-      if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); el.click(); }
+  if(suica && qr){
+    suica.addEventListener('click', function(){ pass('¥ 3,280','IC  TOUCHED'); });
+    qr.addEventListener('click',    function(){ pass('東京 → 盛岡','QR  VERIFIED'); });
+    [suica, qr].forEach(function(el){
+      el.setAttribute('tabindex','0'); el.setAttribute('role','button');
+      el.addEventListener('keydown', function(ev){
+        if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); el.click(); }
+      });
     });
-  });
+  }
 })();
 </script>
 </body>
